@@ -356,8 +356,8 @@ class Parser(Loader):
         for n, flag in enumerate(self.flags):
             try:
                 parsed = self.get_flag_records(flag=flag)
-            except Exception:
-                logger.error(f"Error parsing {flag=}")
+            except (KeyError, ValueError, TypeError) as exc:
+                logger.error(f"Error parsing {flag=}: {exc}")
                 continue
 
             filename = f"{dir_name}/{flag}.csv"

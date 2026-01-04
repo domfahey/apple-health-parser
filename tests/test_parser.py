@@ -310,3 +310,27 @@ class TestParser:
 
         # Should return something (even if it's a fallback value)
         assert isinstance(devices, list)
+
+    def test_export_continues_on_flag_error(
+        self, parser: Parser, tmp_path: Path
+    ) -> None:
+        """Test that export continues processing other flags when one fails."""
+        export_dir = tmp_path / "export_test"
+
+        # Mock get_flag_records to fail on first flag, succeed on others
+        original_get_flag_records = parser.get_flag_records
+        call_count = {"count": 0}
+
+        def mock_get_flag_records(flag):
+            call_count["count"] += 1
+            if call_count["count"] == 1:
+                raise KeyError("Simulated error for first flag")
+            return original_get_flag_records(flag)
+
+        with mock.patch.object(parser, "get_flag_records", mock_get_flag_records):
+            # Should not raise, should continue with other flags
+            parser.export(dir_name=str(export_dir))
+
+        # Verify some files were created (not all due to the simulated error)
+        csv_files = list(export_dir.glob("*.csv"))
+        assert len(csv_files) > 0  # At least some exports succeeded
