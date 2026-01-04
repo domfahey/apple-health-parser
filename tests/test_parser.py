@@ -273,3 +273,40 @@ class TestParser:
         # Verify it returns keys for the actual flag, not hardcoded one
         assert "HKQuantityTypeIdentifierHeartRate" in flag_map
         assert len(flag_map["HKQuantityTypeIdentifierHeartRate"]) > 0
+
+    def test_get_devices_malformed_device_string(self, tmp_path: Path) -> None:
+        """Test get_devices handles malformed device strings gracefully."""
+        # Create XML with a malformed device string (missing parts)
+        xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+        <HealthData locale="en_US">
+            <Record type="HKQuantityTypeIdentifierActiveEnergyBurned"
+                sourceName="Test iPhone" sourceVersion="17.0"
+                device="MalformedDeviceString"
+                unit="kcal"
+                creationDate="2024-01-01 09:00:00 +0000"
+                startDate="2024-01-01 09:00:00 +0000"
+                endDate="2024-01-01 09:00:00 +0000"
+                value="100">
+            </Record>
+        </HealthData>"""
+
+        # Write XML to temp file
+        xml_path = tmp_path / "apple_health_export" / "export.xml"
+        xml_path.parent.mkdir(parents=True, exist_ok=True)
+        xml_path.write_text(xml_content)
+
+        # Create zip file
+        import zipfile
+
+        zip_path = tmp_path / "export.zip"
+        with zipfile.ZipFile(zip_path, "w") as zf:
+            zf.write(xml_path, "apple_health_export/export.xml")
+
+        # Parse - should not crash on malformed device string
+        parser = Parser(export_file=str(zip_path), output_dir=tmp_path, overwrite=True)
+
+        # This should not raise IndexError
+        devices = parser.get_devices(flag="HKQuantityTypeIdentifierActiveEnergyBurned")
+
+        # Should return something (even if it's a fallback value)
+        assert isinstance(devices, list)

@@ -249,15 +249,35 @@ class Parser(Loader):
             Returns:
                 str: Device name with model and software version
             """
-            device_info = rec.attrib["device"].split(", ")
-            name = device_info[1].split(":")[1]
-            model = device_info[4].split(":")[1]
+            raw_device = rec.attrib.get("device", "Unknown")
             try:
-                software = device_info[5].split(":")[1].strip(">")
-                return f"{name} ({model}; {software})"
-            except IndexError:
-                logger.debug(f"No software version found for {name} ({model})")
+                device_info = raw_device.split(", ")
+                # Expected format has at least 5 parts: HKDevice, name, manufacturer, model, hardware
+                if len(device_info) < 5:
+                    return raw_device
+
+                # Extract name and model safely
+                name_parts = device_info[1].split(":")
+                model_parts = device_info[4].split(":")
+                if len(name_parts) < 2 or len(model_parts) < 2:
+                    return raw_device
+
+                name = name_parts[1]
+                model = model_parts[1]
+
+                # Try to get software version (optional)
+                if len(device_info) > 5:
+                    software_parts = device_info[5].split(":")
+                    if len(software_parts) >= 2:
+                        software = software_parts[1].strip(">")
+                        return f"{name} ({model}; {software})"
+
                 return f"{name} ({model})"
+            except (IndexError, AttributeError) as exc:
+                logger.debug(
+                    f"Could not parse device string: {raw_device}, error: {exc}"
+                )
+                return raw_device
 
         if flag:
             return sorted(
