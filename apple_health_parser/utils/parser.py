@@ -89,7 +89,7 @@ class Parser(Loader):
         """
         return sorted({rec.attrib["type"] for rec in data})
 
-    def _build_models(self, flag: str) -> list:
+    def _build_models(self, flag: str) -> list[HealthData | HeartRateData | SleepData]:
         """
         Build models from the records based on the flag.
 
@@ -97,14 +97,14 @@ class Parser(Loader):
             flag (str): Flag to parse the records
 
         Returns:
-            list: List of models based on the flag
+            list[HealthData | HeartRateData | SleepData]: List of models based on the flag
         """
         logger.info(f"Parsing records with flag: {click.style(flag, fg='magenta')}")
 
         if flag not in self.flags:
             raise InvalidFlag(flag, self.flags)
 
-        models: list[HealthData | HeartRateData] = []
+        models: list[HealthData | HeartRateData | SleepData] = []
         failed: dict[str, int] = {}
 
         for rec in self.records[flag]:
@@ -156,19 +156,21 @@ class Parser(Loader):
 
         return models
 
-    def _get_dates(self, models: list) -> set[date]:
+    def _get_dates(
+        self, models: list[HealthData | HeartRateData | SleepData]
+    ) -> set[date]:
         """
         Get unique month and year combinations from the models.
 
         Args:
-            models (list): List of models
+            models (list[HealthData | HeartRateData | SleepData]): List of models
 
         Returns:
-            set[datetime.date]: Set of dates (year, month, day)
+            set[date]: Set of dates (year, month, day)
         """
-        return {rec.start_date.date for rec in models}
+        return {rec.start_date.date() for rec in models}
 
-    def _map_record_keys_to_flags(self) -> dict[str, set]:
+    def _map_record_keys_to_flags(self) -> dict[str, set[str]]:
         """
         Map record keys (e.g. `unit`, `value`, `creationDate`) for each flag.
 

@@ -81,9 +81,8 @@ class TestParser:
             "HKQuantityTypeIdentifierActiveEnergyBurned"
         )
         dates = parser._get_dates(active_energy_models)
-        actual_dates = {method() for method in dates}
 
-        assert actual_dates == {date(2024, 1, 1), date(2024, 1, 2)}
+        assert dates == {date(2024, 1, 1), date(2024, 1, 2)}
 
     def test_map_record_keys_to_flags(self, parser: Parser) -> None:
         flags = [
