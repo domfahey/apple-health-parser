@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from apple_health_parser.exceptions import (
+    InvalidHeatmapOperation,
     InvalidOperation,
     InvalidSource,
     MissingYear,
@@ -68,3 +69,36 @@ class TestPreprocessor:
         assert heatmap.shape == (1, 2)
         assert heatmap.columns.name == "day"
         assert heatmap.index.name == "month"
+
+    def test_invalid_heatmap_operation(self, parser: Parser) -> None:
+        """Test that InvalidHeatmapOperation is raised when heatmap=True but no operation."""
+        data = parser.get_flag_records("HKQuantityTypeIdentifierActiveEnergyBurned")
+
+        with pytest.raises(InvalidHeatmapOperation):
+            Preprocessor(data, year=2024, operation=None, heatmap=True)
+
+    def test_sleep_data_ignores_operation(self, parser: Parser) -> None:
+        """Test that sleep data logs warning and ignores operation."""
+        data = parser.get_flag_records("HKCategoryTypeIdentifierSleepAnalysis")
+
+        # Should not raise, but should reset operation to None
+        preprocessor = Preprocessor(data, year=2024, operation="sum", heatmap=False)
+        df = preprocessor.get_dataframe()
+
+        # Operation should be cleared for sleep data
+        assert preprocessor.oper is None
+        assert isinstance(df, pd.DataFrame)
+
+    def test_sleep_data_with_heatmap_returns_raw_data(self, parser: Parser) -> None:
+        """Test that sleep data with heatmap returns raw data (operation is cleared first)."""
+        data = parser.get_flag_records("HKCategoryTypeIdentifierSleepAnalysis")
+
+        # Sleep data clears operation, so heatmap logic is bypassed
+        preprocessor = Preprocessor(data, year=2024, operation="sum", heatmap=True)
+        df = preprocessor.get_dataframe()
+
+        # Operation is cleared for sleep data
+        assert preprocessor.oper is None
+        # Returns raw sleep data
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) > 0
