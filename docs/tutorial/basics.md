@@ -21,7 +21,24 @@ cli --zip_file ~/Downloads/export.zip --year 2024
 cli --zip_file ~/Downloads/export.zip --source "My Apple Watch"
 ```
 
-The CLI generates walking/running distance plots and activity overview charts. For more control, use the Python API described below.
+### CLI Options
+
+| Option | Required | Default | Description |
+|--------|----------|---------|-------------|
+| `--zip_file` | Yes | - | Path to the Apple Health `export.zip` file |
+| `--year` | No | Current year | Year to filter and plot data |
+| `--source` | No | All sources | Filter by source device/app name |
+
+### Output
+
+The CLI generates two SVG plots:
+
+1. **Walking/Running Distance** - Daily distance totals as a bar chart
+2. **Activity Overview** - Combined view of calories burned, exercise time, and stand time
+
+Plots are saved to the current directory and displayed interactively.
+
+For more control over plot types and configurations, use the Python API described below.
 
 ## Basics
 

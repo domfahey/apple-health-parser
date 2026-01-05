@@ -18,7 +18,7 @@ make clean        # Remove venv, cache, and build artifacts
 
 Run a single test:
 ```bash
-uv run pytest tests/test_parser.py::test_function_name -v
+uv run pytest tests/test_parser.py::TestParser::test_function_name -v
 ```
 
 ## Architecture
@@ -58,3 +58,9 @@ uv run cli --zip_file path/to/export.zip
 ## Testing
 
 Tests use fixtures from `tests/conftest.py` with sample data in `tests/data/`. The `parser` fixture creates a Parser instance using `tmp_path` for isolated extraction.
+
+## Conventions
+
+- Python 3.11+ with type hints required
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `build(deps):`)
+- Apple Health exports contain sensitive personal data - never commit real health exports; keep test fixtures anonymized in `tests/data/`

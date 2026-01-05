@@ -11,13 +11,17 @@
 - [x] Add a Sleep overview plot
 - [x] Filter by source (e.g. "Apple Watch")
 - [x] Get list of devices
+- [x] CLI with basic plotting commands
 
 ## Tests
 
 - [x] Add missing tests
+- [x] Add test coverage reporting
 
 ## Documentation
 
-- [ ] Check docstrings
-- [ ] Add proper documentation with examples for each plot
-- [ ] Add pages for CHANGELOG.md and LICENSE.md
+- [x] Add proper documentation with examples for each plot
+- [x] Add Quick Start guide
+- [x] Add API reference with context
+- [ ] Add CHANGELOG page
+- [ ] Add LICENSE page

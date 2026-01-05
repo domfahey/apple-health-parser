@@ -7,6 +7,23 @@ The *Apple Health Parser* Python package simplifies the extraction and analysis 
 !!! warning
     This package is still in active development and has not been tested on real data coming from different sources, nor has it been tested with data originating from versions of iOS < 17.
 
+## Quick Start
+
+```python
+from apple_health_parser.utils.parser import Parser
+from apple_health_parser.plot.plots import Plots
+
+# Parse your Apple Health export
+parser = Parser(export_file="export.zip", overwrite=True)
+
+# Get heart rate data
+data = parser.get_flag_records("HKQuantityTypeIdentifierHeartRate")
+
+# Plot daily averages for 2024
+plot = Plots(data=data, year=2024, operation="mean")
+plot.plot(plot_type="bar", save=True)
+```
+
 <div class="grid cards" markdown>
 
 - :octicons-terminal-16: __Installation__

@@ -65,6 +65,4 @@ nav:
           - Loader: "usage/utils/loader.md"
           - Parser: "usage/utils/parser.md"
   - Roadmap: "todo.md"
-  # - About:
-  #   - Changelog: "changelog.md"
-  #   - License: "license.md"
+  - Contributing: "contributing.md"
