@@ -66,6 +66,11 @@ class OverviewType(StrEnum):
 
 
 class OverviewSubtypes(Enum):
+    """Overview categories with their associated health data flags.
+
+    Each subtype groups related health metrics for combined visualization.
+    """
+
     ACTIVITY = [
         "HKQuantityTypeIdentifierActiveEnergyBurned",
         "HKQuantityTypeIdentifierAppleExerciseTime",

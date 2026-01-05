@@ -49,8 +49,7 @@ class Preprocessor(PreprocessorInterface):
             self.records.date.apply(lambda x: x.year == self.year)
         ]
 
-        # TODO: Handle other flags with special cases
-        # Special case for HKQuantityTypeIdentifierOxygenSaturation (convert to percentage)
+        # Convert oxygen saturation from decimal to percentage (e.g., 0.98 -> 98%)
         if self.flag == "HKQuantityTypeIdentifierOxygenSaturation":
             self.records.value *= 100
 

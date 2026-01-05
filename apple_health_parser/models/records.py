@@ -6,12 +6,22 @@ from pydantic_extra_types.timezone_name import TimeZoneName
 
 
 class MotionContext(StrEnum):
+    """Heart rate motion context from Apple Health metadata.
+
+    Indicates the user's activity level when heart rate was recorded.
+    """
+
     UNSET = "0"
     SEDENTARY = "1"
     ACTIVE = "2"
 
 
 class SleepType(StrEnum):
+    """Sleep analysis category values from Apple Health.
+
+    Represents different sleep stages and states tracked by Apple Watch.
+    """
+
     IN_BED = "HKCategoryValueSleepAnalysisInBed"
     AWAKE = "HKCategoryValueSleepAnalysisAwake"
     CORE = "HKCategoryValueSleepAnalysisAsleepCore"

@@ -26,6 +26,9 @@ class SleepPlot(PlotInterface):
                 If provided, the data will be filtered to include only records within this range.
                 Must be a tuple of two strings in ISO format (e.g. `("2024-03-01T20:00:00+00:00", "2024-03-02T08:00:00+00:00")`).
                 Defaults to None, which means no filtering is applied.
+
+        Raises:
+            ValueError: If timerange is not a tuple of two ISO format date strings.
         """
         super().__init__(data=data, year=year)
 

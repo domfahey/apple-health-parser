@@ -68,7 +68,7 @@ class PlotInterface(ABC):
         title = None
         title_yaxis = None
 
-        # Special case for the heart rate flag ot include the motion context
+        # Special case for the heart rate flag to include the motion context
         if self.flag == "HKQuantityTypeIdentifierHeartRate" and self.oper is None:
             x = "start_date"
             y = "value"
