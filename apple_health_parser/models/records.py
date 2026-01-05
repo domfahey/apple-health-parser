@@ -65,11 +65,11 @@ class HealthData(BaseModel):
         description="Date of measurement end",
         examples=["2021-01-01 00:00:00 +0200"],
     )
-    value: int | float | str = Field(
+    value: int | float | str | None = Field(
         alias="value",
         title="Value",
         description="Value of the health data",
-        examples=[60, 120, 15.5, ""],
+        examples=[60, 120, 15.5, "", None],
     )
 
     @field_validator("creation_date", "start_date", "end_date", mode="before")
@@ -79,8 +79,10 @@ class HealthData(BaseModel):
 
     @field_validator("value", mode="before")
     @classmethod
-    def validate_value(cls, v) -> int | float | SleepType:
+    def validate_value(cls, v) -> int | float | SleepType | None:
         if type(v) is str:
+            if v == "":
+                return None  # Handle empty string gracefully
             if v in SleepType:
                 return SleepType(v)
             try:
@@ -93,6 +95,7 @@ class HealthData(BaseModel):
 class HeartRateData(HealthData):
     device: str = Field(title="Device", description="Device used for measurement")
     motion_context: str = Field(
+        default="Unset",
         alias="motionContext",
         title="Motion Context",
         description="Context of motion (e.g. sedentary, active, unset)",
@@ -101,7 +104,9 @@ class HeartRateData(HealthData):
 
     @field_validator("motion_context", mode="before")
     @classmethod
-    def check_motion_context(cls, v: str) -> str:
+    def check_motion_context(cls, v: str | None) -> str:
+        if v is None:
+            return "Unset"
         return MotionContext(v).name.lower().capitalize()
 
 

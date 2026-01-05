@@ -37,9 +37,12 @@ class Loader:
 
         export_dir = output_dir / "apple_health_export"
 
-        # Check if output directory exists and delete it if it does and "y" or "yes" is entered
+        # Check if output directory exists and handle accordingly
         if export_dir.exists():
-            Loader.delete_previous_export(export_dir, overwrite)
+            should_extract = Loader.delete_previous_export(export_dir, overwrite)
+            if not should_extract:
+                # Skip extraction, use existing export
+                return (export_dir / "export.xml").resolve()
 
         # Extract the zip file
         with ZipFile(zip_file, "r") as data:
@@ -55,13 +58,16 @@ class Loader:
         return (export_dir / "export.xml").resolve()
 
     @staticmethod
-    def delete_previous_export(output_dir: Path, overwrite: bool | None) -> None:
+    def delete_previous_export(output_dir: Path, overwrite: bool | None) -> bool:
         """
         Delete the previous export if it exists and the user agrees.
 
         Args:
             output_dir (Path): The output directory to extract the file to
             overwrite (bool | None): Flag to overwrite the existing data, defaults to None
+
+        Returns:
+            bool: True if extraction should proceed, False if it should be skipped
         """
         match overwrite:
             case None:
@@ -69,10 +75,19 @@ class Loader:
                 if click.confirm("Do you want to delete it?"):
                     rmtree(output_dir)
                     logger.warning(f"Deleted previous export at {output_dir}...")
+                    return True
+                return False
 
             case True:
                 rmtree(output_dir)
                 logger.warning(f"Deleted previous export at {output_dir}...")
+                return True
+
+            case False:
+                logger.info(f"Skipping extraction, using existing export at {output_dir}...")
+                return False
+
+        return True  # Default to proceeding
 
     @staticmethod
     def read_xml(xml_file: Path) -> list[ET.Element]:

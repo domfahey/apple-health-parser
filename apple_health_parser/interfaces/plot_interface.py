@@ -155,6 +155,9 @@ class PlotInterface(ABC):
             if format.upper() not in AllowedImageFormats.__members__:
                 raise InvalidImageFormat(format)
 
+            # Normalize format to lowercase for consistent handling
+            format = format.lower()
+
             output_dir = Path("plots")
             output_dir.mkdir(exist_ok=True)
             lowercase_flag = self.meta.name.replace(" ", "_").lower()
