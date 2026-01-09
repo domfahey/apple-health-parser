@@ -40,8 +40,8 @@ class Preprocessor(PreprocessorInterface):
         self.records = self.data.records
 
         # Filter by source (e.g. "Apple Watch" or "iPhone")
-        if self.src:
-            self.records = self.records[self.records.source_name == self.src]
+        if self.source:
+            self.records = self.records[self.records.source_name == self.source]
 
         # Filter by year (e.g. 2024)
         self.records["date"] = self.records.start_date.dt.date
@@ -54,18 +54,18 @@ class Preprocessor(PreprocessorInterface):
             self.records.value *= 100
 
         if self.flag == "HKCategoryTypeIdentifierSleepAnalysis":
-            if self.oper:
+            if self.operation:
                 logger.warning(
                     "Sleep data does not support operations. "
                     "Returning raw sleep data without applying the operation."
                 )
-                self.oper = None
+                self.operation = None
 
         # Apply operation (e.g. "mean" or "sum")
-        if self.oper:
+        if self.operation:
             self.records = (
                 self.records.groupby("date")["value"]
-                .apply(getattr(pd.Series, self.oper))
+                .apply(getattr(pd.Series, self.operation))
                 .round()
                 .reset_index()
             )
@@ -73,18 +73,18 @@ class Preprocessor(PreprocessorInterface):
             logger.info(
                 f"Found {len(self.records)} records "
                 f"(flag: {click.style(self.flag, fg='magenta')}, "
-                f"operation: {click.style(self.oper, fg='blue')}, "
+                f"operation: {click.style(self.operation, fg='blue')}, "
                 f"year: {click.style(self.year, fg='green')})"
             )
 
             # Return heatmap data if requested
-            if self.hmap:
+            if self.is_heatmap:
                 if self.flag == "HKCategoryTypeIdentifierSleepAnalysis":
                     logger.warning(
                         "Heatmaps are not supported for sleep data. "
                         "Returning raw sleep data without heatmap."
                     )
-                    self.hmap = False
+                    self.is_heatmap = False
                 return self.get_heatmap(self.records)
 
         else:

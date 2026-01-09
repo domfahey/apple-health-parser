@@ -7,7 +7,11 @@ from apple_health_parser.interfaces.plot_interface import PlotInterface
 
 class Plot(PlotInterface):
     """
-    Plot the parsed data.
+    Generate Plotly visualizations for parsed Apple Health data.
+
+    Supports scatter plots for raw data, bar charts for count/sum aggregations,
+    line charts for statistical operations (mean, median, min, max), and heatmaps
+    for calendar-based views.
     """
 
     def _get_figure(self) -> Figure:
@@ -21,7 +25,7 @@ class Plot(PlotInterface):
             Figure: Figure object
         """
 
-        if self.ptype is PlotType.HEATMAP:
+        if self.plot_type is PlotType.HEATMAP:
             fig: Figure = px.imshow(
                 self.dataframe,
                 labels=dict(
@@ -29,8 +33,8 @@ class Plot(PlotInterface):
                     y="Month",
                 ),
                 text_auto=True,
-                color_continuous_scale=self.psets.colormap,
-                title=self.psets.title,
+                color_continuous_scale=self.plot_settings.colormap,
+                title=self.plot_settings.title,
                 template="simple_white",
             )
 
@@ -66,25 +70,25 @@ class Plot(PlotInterface):
             )
 
         else:
-            fig = getattr(px, self.ptype)(
+            fig = getattr(px, self.plot_type)(
                 data_frame=self.dataframe,
-                x=self.psets.x,
-                y=self.psets.y,
-                color=self.psets.color,
-                title=self.psets.title,
+                x=self.plot_settings.x,
+                y=self.plot_settings.y,
+                color=self.plot_settings.color,
+                title=self.plot_settings.title,
                 template="simple_white",
             )
 
-            if self.ptype is PlotType.SCATTER:
+            if self.plot_type is PlotType.SCATTER:
                 fig.update_traces(marker=dict(size=4))
 
-            elif self.ptype is PlotType.BAR:
+            elif self.plot_type is PlotType.BAR:
                 fig.update_coloraxes(showscale=False)
 
             fig.update_layout(
                 xaxis_title="Date",
-                yaxis_title=self.psets.title_yaxis,
-                legend_title_text=self.psets.legend,
+                yaxis_title=self.plot_settings.title_yaxis,
+                legend_title_text=self.plot_settings.legend,
             )
 
         return fig

@@ -35,11 +35,11 @@ class PreprocessorInterface(ABC):
             operation (str | None, optional): Operation, defaults to None
             heatmap (bool, optional): Flag to plot a heatmap, defaults to False
         """
-        self.src = source
+        self.source = source
         self.data = data
         self.year = year
-        self.oper = operation
-        self.hmap = heatmap
+        self.operation = operation
+        self.is_heatmap = heatmap
         self.flag = data.flag
         self._validate()
 
@@ -73,16 +73,16 @@ class PreprocessorInterface(ABC):
         if self.year not in years:
             raise MissingYear(self.year, years)
 
-        if self.oper is not None:
-            if self.oper not in OPERATIONS:
-                raise InvalidOperation(self.oper)
+        if self.operation is not None:
+            if self.operation not in OPERATIONS:
+                raise InvalidOperation(self.operation)
         else:
-            if self.hmap:
+            if self.is_heatmap:
                 raise InvalidHeatmapOperation
 
         sources = self.data.records.source_name.unique()
-        if self.src and self.src not in sources:
-            raise InvalidSource(self.src, sources)
+        if self.source and self.source not in sources:
+            raise InvalidSource(self.source, sources)
 
     @abstractmethod
     def get_heatmap(self, data: pd.DataFrame) -> pd.DataFrame:

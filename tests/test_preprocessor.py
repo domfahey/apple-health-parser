@@ -86,7 +86,7 @@ class TestPreprocessor:
         df = preprocessor.get_dataframe()
 
         # Operation should be cleared for sleep data
-        assert preprocessor.oper is None
+        assert preprocessor.operation is None
         assert isinstance(df, pd.DataFrame)
 
     def test_sleep_data_with_heatmap_returns_raw_data(self, parser: Parser) -> None:
@@ -98,7 +98,7 @@ class TestPreprocessor:
         df = preprocessor.get_dataframe()
 
         # Operation is cleared for sleep data
-        assert preprocessor.oper is None
+        assert preprocessor.operation is None
         # Returns raw sleep data
         assert isinstance(df, pd.DataFrame)
         assert len(df) > 0

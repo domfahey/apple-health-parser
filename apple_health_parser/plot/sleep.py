@@ -87,8 +87,8 @@ class SleepPlot(PlotInterface):
 
         fig.update_layout(
             xaxis_title="Date",
-            yaxis_title=self.psets.title_yaxis,
-            legend_title_text=self.psets.legend,
+            yaxis_title=self.plot_settings.title_yaxis,
+            legend_title_text=self.plot_settings.legend,
             template="simple_white",
         )
 

@@ -34,11 +34,11 @@ class PlotInterface(ABC):
             heatmap (bool, optional): Flag to plot a heatmap, defaults to False
             title (bool, optional): Flag to include the plot title, defaults to False
         """
-        self.src = source
+        self.source = source
         self.data = data
         self.year = year
-        self.oper = operation
-        self.hmap = heatmap
+        self.operation = operation
+        self.is_heatmap = heatmap
         self.title = title
         self.flag = data.flag
 
@@ -49,8 +49,8 @@ class PlotInterface(ABC):
         self.meta = preprocessor.meta
 
         # Plot type after preprocessor due to validity checks in preprocessor
-        self.ptype: PlotType = self._get_plot_type()
-        self.psets: PlotSettings = self._get_plot_settings()
+        self.plot_type: PlotType = self._get_plot_type()
+        self.plot_settings: PlotSettings = self._get_plot_settings()
 
     def _get_plot_settings(self) -> PlotSettings:
         """
@@ -69,7 +69,7 @@ class PlotInterface(ABC):
         title_yaxis = None
 
         # Special case for the heart rate flag to include the motion context
-        if self.flag == "HKQuantityTypeIdentifierHeartRate" and self.oper is None:
+        if self.flag == "HKQuantityTypeIdentifierHeartRate" and self.operation is None:
             x = "start_date"
             y = "value"
             color = "motion_context"
@@ -89,15 +89,15 @@ class PlotInterface(ABC):
             case True:
                 title = (
                     f"{self.meta.name} {self.year}"
-                    f"{' (' + self.oper + ')' if self.oper else ''}"
-                    f"{': ' + self.src if self.src else ''}"
+                    f"{' (' + self.operation + ')' if self.operation else ''}"
+                    f"{': ' + self.source if self.source else ''}"
                 )
 
-        match self.ptype:
+        match self.plot_type:
             case PlotType.HEATMAP:
                 colormap = self.meta.colormap
             case _:
-                title_yaxis = f"{self.meta.name} {self.meta.unit} ({self.oper})"
+                title_yaxis = f"{self.meta.name} {self.meta.unit} ({self.operation})"
 
         return PlotSettings(x, y, color, colormap, legend, title, title_yaxis)
 
@@ -108,11 +108,11 @@ class PlotInterface(ABC):
         Returns:
             PlotType: Plot type
         """
-        match self.hmap:
+        match self.is_heatmap:
             case True:
                 return PlotType.HEATMAP
             case False:
-                match self.oper:
+                match self.operation:
                     case Operations.COUNT | Operations.SUM:
                         return PlotType.BAR
                     case (
@@ -161,7 +161,7 @@ class PlotInterface(ABC):
             output_dir = Path("plots")
             output_dir.mkdir(exist_ok=True)
             lowercase_flag = self.meta.name.replace(" ", "_").lower()
-            filename = f"{'heatmap' if self.hmap else 'plot'}_{lowercase_flag}_{self.year}{'_' + self.oper if self.oper else ''}"
+            filename = f"{'heatmap' if self.is_heatmap else 'plot'}_{lowercase_flag}_{self.year}{'_' + self.operation if self.operation else ''}"
 
             if format == "html":
                 figure.write_html(output_dir / f"{filename}.html")

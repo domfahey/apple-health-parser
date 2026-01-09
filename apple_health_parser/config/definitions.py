@@ -25,10 +25,14 @@ class Metadata:
 
 def get_flag_metadata() -> dict[str, Metadata]:
     """
-    Get the metadata for each flag.
+    Load flag metadata from the YAML configuration file.
+
+    Reads the flags.yaml file from the package config directory and constructs
+    Metadata objects for each HealthKit flag type (e.g., heart rate, steps).
 
     Returns:
-        dict[str, Metadata]: Dictionary of flag metadata with flag as key and Metadata as value
+        dict[str, Metadata]: Dictionary mapping HealthKit flag identifiers
+            (e.g., "HKQuantityTypeIdentifierHeartRate") to their Metadata.
     """
     flags_file = resources.files("apple_health_parser.config") / "flags.yaml"
     flags_content = yaml.safe_load(flags_file.read_text())
@@ -36,6 +40,8 @@ def get_flag_metadata() -> dict[str, Metadata]:
 
 
 class AllowedImageFormats(StrEnum):
+    """Supported image export formats for plots."""
+
     HTML = "html"
     PNG = "png"
     JPEG = "jpeg"
@@ -45,6 +51,8 @@ class AllowedImageFormats(StrEnum):
 
 
 class Operations(StrEnum):
+    """Aggregation operations for health data preprocessing."""
+
     COUNT = "count"
     MAX = "max"
     MEAN = "mean"
@@ -54,6 +62,8 @@ class Operations(StrEnum):
 
 
 class PlotType(StrEnum):
+    """Plotly chart types for data visualization."""
+
     BAR = "bar"
     LINE = "line"
     SCATTER = "scatter"
@@ -61,6 +71,8 @@ class PlotType(StrEnum):
 
 
 class OverviewType(StrEnum):
+    """Categories of health data overviews."""
+
     ACTIVITY = "activity"
     BODY = "body"
 

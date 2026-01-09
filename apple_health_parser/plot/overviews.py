@@ -40,7 +40,7 @@ class Overview:
             source (str | None, optional):  Source, defaults to None
             title (bool, optional): Flag to include the plot title, defaults to False
         """
-        self.src = source
+        self.source = source
         self.data = data
         self.overview_type = overview_type
         self.year = year
